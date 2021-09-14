@@ -11,7 +11,7 @@ from telethon.tl.functions.channels import InviteToChannelRequest
 
 api_id = "4540261"
 api_hash = "8627c4e0ef04c5cd61afcee91bdaa7de"
-bot_token = "1917461869:AAHOoZWs0WZaq0WErFcI6Zm9XszXI6cfAPc"
+bot_token = "1952174412:AAENqB-CWAkHfJL-iS4dcghTdDnX4eQyHkg"
 
 bot = TelegramClient('bot', api_id, api_hash)
 bot.start(bot_token=bot_token)
