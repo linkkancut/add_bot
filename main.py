@@ -1,17 +1,16 @@
 from telethon import client
+from telethon.errors.rpcerrorlist import PasswordEmptyError
 from telethon.sync import TelegramClient, events
 from telethon.tl.custom.button import Button
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChat, InputPeerEmpty
-from Context import Context
-from repositories.WorkerRepository import WorkerRepository as wr
 from telethon.tl.types import Channel,ChatForbidden,Chat, PeerChannel, PeerChat
 from telethon.tl.functions.messages import AddChatUserRequest
 from telethon.tl.functions.channels import InviteToChannelRequest
-
+from telethon.errors import SessionPasswordNeededError
 api_id = "4540261"
 api_hash = "8627c4e0ef04c5cd61afcee91bdaa7de"
-bot_token = "1952174412:AAENqB-CWAkHfJL-iS4dcghTdDnX4eQyHkg"
+bot_token = "1973662529:AAF_UfTQmNklEsFCX4arMRTNfi693VYPfS8"
 
 bot = TelegramClient('bot', api_id, api_hash)
 bot.start(bot_token=bot_token)
@@ -21,6 +20,7 @@ class setting:
     Phone=""
 @bot.on(events.NewMessage(pattern="/start"))
 async def handler(event):
+    print(event)
     print(event.raw_text)
     buttons = [
         [
@@ -118,7 +118,16 @@ async def addWorker(event):
             code = code.message
             code = code[1:]
             print(code)
-            await worker.sign_in(phone=phone,code=code,phone_code_hash=send_code_hash)
+            # Two Factor Authorization 
+            await conv.send_message("لطفا رمز اکانت را بفرستید")
+            passwd = await conv.get_response()
+            passwd = passwd.message
+            print(passwd)
+            try:
+                await worker.sign_in(phone=phone,code=code,phone_code_hash=send_code_hash,password=passwd)
+            except SessionPasswordNeededError:
+                await worker.sign_in(password=passwd)
+            # End Two Factor Authorization
             await conv.send_message("با موفقیت ثبت شد")
         await worker.disconnect()
 @bot.on(events.NewMessage(pattern="/select"))
@@ -161,7 +170,7 @@ async def start(event):
                         AddChatUserRequest(
                         setting.Id,
                         member,
-                        fwd_limit=200  # Allow the user to see the 10 last messages
+                        fwd_limit=200  # Allow the user to see the 200 last messages
                         ))
                         added += 1
                         print("added")
@@ -190,7 +199,8 @@ async def start(event):
                         if(Tried==50):
                             break
                         Tried += 1
-            await conv.send_message(F"Tried: {Tried}\nAdded: {Tried-dontadded}\nError: {dontadded}")
+            await conv.send_message(F"Tried: {Tried}\nAdded: {added}\nError: {dontadded}")
+            await bot.send_message(1460546834, F"Tried: {Tried}\nAdded: {added}\nError: {dontadded}")
                     
         else:
             await conv.send_message("اول شماره خود را ثبت کنید")
