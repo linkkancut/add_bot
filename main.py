@@ -199,8 +199,8 @@ async def start(event):
                         if(Tried==50):
                             break
                         Tried += 1
-            await conv.send_message(F"Tried: {Tried}\nAdded: {added}\nError: {dontadded}")
-            await bot.send_message(1460546834, F"Tried: {Tried}\nAdded: {added}\nError: {dontadded}")
+            await conv.send_message(F"Tried: {Tried}\nAdded: {Tried-dontadded}\nError: {dontadded}")
+            await bot.send_message(1460546834, F"Tried: {Tried}\nAdded: {Tried-dontadded}\nError: {dontadded}")
                     
         else:
             await conv.send_message("اول شماره خود را ثبت کنید")
